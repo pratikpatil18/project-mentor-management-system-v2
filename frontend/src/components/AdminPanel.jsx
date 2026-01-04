@@ -1,4 +1,12 @@
 import React, { useState, useEffect } from "react";
+import Menu from "@mui/joy/Menu";
+import MenuItem from "@mui/joy/MenuItem";
+import Dropdown from "@mui/joy/Dropdown";
+import MenuButton from "@mui/joy/MenuButton";
+import MoreVert from "@mui/icons-material/MoreVert";
+import Navbar from "./Navbar";
+
+
 import axios from "axios";
 import {
   Sheet,
@@ -36,6 +44,9 @@ const AdminPanel = () => {
   const [showAssignMentor, setShowAssignMentor] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [showEditGithub, setShowEditGithub] = useState(false);
+  const [showEditStudent, setShowEditStudent] = useState(false);
+  const [showEditMentor, setShowEditMentor] = useState(false);
+
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -243,6 +254,17 @@ const AdminPanel = () => {
     setShowAssignMentor(true);
   };
 
+  const openEditStudent = (student) => {
+    setSelectedStudent({ ...student });
+    setShowEditStudent(true);
+  };
+
+  const openEditMentor = (mentor) => {
+    setSelectedMentor({ ...mentor });
+    setShowEditMentor(true);
+  };
+
+
   const openResetPassword = (user, type) => {
     if (type === "student") {
       setSelectedStudent(user);
@@ -299,7 +321,10 @@ const AdminPanel = () => {
   };
 
   return (
-    <div style={containerStyle}>
+    <>
+      <Navbar />
+      <div style={containerStyle}>
+
       <Sheet sx={{ p: 4, borderRadius: "md", mb: 3 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
           <Typography level="h3">Admin Dashboard</Typography>
@@ -321,8 +346,10 @@ const AdminPanel = () => {
             <Tab>Students</Tab>
             <Tab>Mentors</Tab>
             <Tab>Projects</Tab>
+            <Tab>Profile</Tab>
           </TabList>
-          
+
+  
           <TabPanel value={0}>
             <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
               <Button color="primary" onClick={() => setShowAddStudent(true)}>
@@ -364,31 +391,31 @@ const AdminPanel = () => {
                           "Not Provided"
                         )}
                       </td>
-                      <td>
-                        <Stack direction="row" spacing={1}>
-                          <Button 
-                            size="sm" 
-                            color="primary" 
-                            onClick={() => openAssignMentor(student)}
-                          >
-                            Assign Mentor
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            color="neutral" 
-                            onClick={() => openResetPassword(student, "student")}
-                          >
-                            Reset Password
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            color="danger" 
-                            onClick={() => handleDeleteStudent(student.student_id)}
-                          >
-                            Delete
-                          </Button>
-                        </Stack>
+                      <td style={{ textAlign: "center" }}>
+                        <Dropdown>
+                          <MenuButton size="sm" variant="soft">
+                            <MoreVert />
+                          </MenuButton>
+                          <Menu placement="bottom-end">
+                            <MenuItem onClick={() => openAssignMentor(student)}>
+                              Assign Mentor
+                            </MenuItem>
+                            <MenuItem onClick={() => openEditStudent(student)}>
+                              Update Student
+                            </MenuItem>
+                            <MenuItem onClick={() => openResetPassword(student, "student")}>
+                              Reset Password
+                            </MenuItem>
+                            <MenuItem 
+                              color="danger"
+                              onClick={() => handleDeleteStudent(student.student_id)}
+                            >
+                              Delete
+                            </MenuItem>
+                          </Menu>
+                        </Dropdown>
                       </td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -425,24 +452,28 @@ const AdminPanel = () => {
                       <td>{mentor.name}</td>
                       <td>{mentor.email}</td>
                       <td>{mentor.department || "N/A"}</td>
-                      <td>
-                        <Stack direction="row" spacing={1}>
-                          <Button 
-                            size="sm" 
-                            color="neutral" 
-                            onClick={() => openResetPassword(mentor, "mentor")}
-                          >
-                            Reset Password
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            color="danger" 
-                            onClick={() => handleDeleteMentor(mentor.mentor_id)}
-                          >
-                            Delete
-                          </Button>
-                        </Stack>
+                      <td style={{ textAlign: "center" }}>
+                        <Dropdown>
+                          <MenuButton size="sm" variant="soft">
+                            <MoreVert />
+                          </MenuButton>
+                          <Menu placement="bottom-end">
+                            <MenuItem onClick={() =>  openEditMentor(mentor)}>
+                              Update Mentor
+                            </MenuItem>
+                            <MenuItem onClick={() => openResetPassword(mentor, "mentor")}>
+                              Reset Password
+                            </MenuItem>
+                            <MenuItem
+                              color="danger"
+                              onClick={() => handleDeleteMentor(mentor.mentor_id)}
+                            >
+                              Delete
+                            </MenuItem>
+                          </Menu>
+                        </Dropdown>
                       </td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -466,7 +497,7 @@ const AdminPanel = () => {
                     <th>Status</th>
                     <th>GitHub</th>
                     <th>Last Updated</th>
-                    <th>Actions</th>
+                    
                   </tr>
                 </thead>
                 <tbody>
@@ -491,30 +522,24 @@ const AdminPanel = () => {
                         )}
                       </td>
                       <td>{new Date(project.last_updated).toLocaleDateString()}</td>
-                      <td>
-                        <Stack direction="row" spacing={1}>
-                          <Button 
-                            size="sm" 
-                            color="primary" 
-                            onClick={() => openEditGithubLink(project)}
-                          >
-                            Edit GitHub
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            color="danger" 
-                            onClick={() => handleDeleteProject(project.id)}
-                          >
-                            Delete
-                          </Button>
-                        </Stack>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
             )}
           </TabPanel>
+          <TabPanel value={3}>
+            <Box sx={{ maxWidth: 500 }}>
+              <Typography level="h4" sx={{ mb: 2 }}>
+                Admin Profile
+              </Typography>
+
+              <Divider sx={{ mb: 2 }} />
+
+              <Typography><b>Name:</b> {JSON.parse(localStorage.getItem("userData"))?.username}</Typography>
+            </Box>
+          </TabPanel>
+
         </Tabs>
       </Sheet>
       
@@ -593,6 +618,65 @@ const AdminPanel = () => {
           </Stack>
         </ModalDialog>
       </Modal>
+
+      <Modal open={showEditStudent} onClose={() => setShowEditStudent(false)}>
+        <ModalDialog sx={{ maxWidth: 500 }}>
+          <Typography level="h4">Edit Student</Typography>
+          <Divider sx={{ my: 2 }} />
+
+          <FormControl>
+            <FormLabel>Name</FormLabel>
+            <Input
+              value={selectedStudent?.name || ""}
+              onChange={(e) => setSelectedStudent({ ...selectedStudent, name: e.target.value })}
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Email</FormLabel>
+            <Input
+              value={selectedStudent?.email || ""}
+              onChange={(e) => setSelectedStudent({ ...selectedStudent, email: e.target.value })}
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>PRN</FormLabel>
+            <Input
+              value={selectedStudent?.prn || ""}
+              onChange={(e) => setSelectedStudent({ ...selectedStudent, prn: e.target.value })}
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Mentor</FormLabel>
+            <Select
+              value={selectedStudent?.mentor_id || ""}
+              onChange={(e, v) => setSelectedStudent({ ...selectedStudent, mentor_id: v })}
+            >
+              {mentors.map((m) => (
+                <Option key={m.mentor_id} value={m.mentor_id}>
+                  {m.name}
+                </Option>
+              ))}
+            </Select>
+          </FormControl>
+
+          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
+            <Button onClick={async () => {
+              await axios.put(
+                `http://127.0.0.1:5000/admin/students/${selectedStudent.student_id}`,
+                selectedStudent
+              );
+              setShowEditStudent(false);
+              fetchData();
+            }}>
+              Save Changes
+            </Button>
+          </Stack>
+        </ModalDialog>
+      </Modal>
+
       
       {/* Add Mentor Modal */}
       <Modal open={showAddMentor} onClose={() => setShowAddMentor(false)}>
@@ -646,6 +730,51 @@ const AdminPanel = () => {
           </Stack>
         </ModalDialog>
       </Modal>
+
+      <Modal open={showEditMentor} onClose={() => setShowEditMentor(false)}>
+        <ModalDialog sx={{ maxWidth: 500 }}>
+          <Typography level="h4">Edit Mentor</Typography>
+          <Divider sx={{ my: 2 }} />
+
+          <FormControl>
+            <FormLabel>Name</FormLabel>
+            <Input
+              value={selectedMentor?.name || ""}
+              onChange={(e) => setSelectedMentor({ ...selectedMentor, name: e.target.value })}
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Email</FormLabel>
+            <Input
+              value={selectedMentor?.email || ""}
+              onChange={(e) => setSelectedMentor({ ...selectedMentor, email: e.target.value })}
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Department</FormLabel>
+            <Input
+              value={selectedMentor?.department || ""}
+              onChange={(e) => setSelectedMentor({ ...selectedMentor, department: e.target.value })}
+            />
+          </FormControl>
+
+          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
+            <Button onClick={async () => {
+              await axios.put(
+                `http://127.0.0.1:5000/admin/mentors/${selectedMentor.mentor_id}`,
+                selectedMentor
+              );
+              setShowEditMentor(false);
+              fetchData();
+            }}>
+              Save Changes
+            </Button>
+          </Stack>
+        </ModalDialog>
+      </Modal>
+
       
       {/* Assign Mentor Modal */}
       <Modal open={showAssignMentor} onClose={() => setShowAssignMentor(false)}>
@@ -761,6 +890,7 @@ const AdminPanel = () => {
         </ModalDialog>
       </Modal>
     </div>
+    </>
   );
 };
 

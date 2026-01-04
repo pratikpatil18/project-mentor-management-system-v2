@@ -50,13 +50,18 @@ const StudentPanel = () => {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("projects");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [showCreateProjectModal, setShowCreateProjectModal] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [githubInput, setGithubInput] = useState("");
+
   
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const studentName = userData?.name || "Student";
+
   // New project form states
   const [projectTitle, setProjectTitle] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
@@ -392,6 +397,35 @@ const StudentPanel = () => {
     setUpdateStudent({ name: "", prn: "", email: "", password: "", mentor_id: "", github_link: "" });
   };
 
+  const updateGithub = async () => {
+    if (!githubInput || githubInput.trim() === "") {
+      alert("GitHub link cannot be empty");
+      return;
+    }
+
+    // Basic GitHub URL validation
+    if (!githubInput.startsWith("https://github.com/")) {
+      alert("Please enter a valid GitHub profile URL");
+      return;
+    }
+
+    try {
+      await axios.put(`http://127.0.0.1:5000/student/${currentUser.student_id}/github`, {
+        github_link: githubInput
+      });
+
+      const updated = { ...currentUser, github_link: githubInput };
+      setCurrentUser(updated);
+      localStorage.setItem("userData", JSON.stringify(updated));
+      setGithubInput("");
+
+      alert("GitHub updated successfully");
+    } catch (err) {
+      alert("Failed to update GitHub");
+    }
+  };
+
+
   const netflixButtonStyle = {
     backgroundColor: '#e50914',
     color: 'white',
@@ -469,76 +503,95 @@ const StudentPanel = () => {
     marginBottom: '15px',
   };
 
+  const deleteProject = async (projectId) => {
+    if (!window.confirm("Are you sure you want to delete this project?")) return;
+
+    try {
+      await axios.delete(`http://127.0.0.1:5000/projects/projects/${projectId}`);
+
+      alert("Project deleted");
+
+      // Remove from UI
+      setProjects(prev => prev.filter(p => p.id !== projectId));
+      setSelectedProject(null);
+
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.detail || "Cannot delete this project");
+    }
+  };
+
+
   const renderProfileTab = () => {
-    if (!currentUser) return <div style={cardStyle}>Loading user data...</div>;
-    
+    if (!currentUser) return <Typography>Loading...</Typography>;
+
     return (
-      <div style={cardStyle}>
-        <h3 style={{ color: '#e50914', marginBottom: '20px' }}>Your Profile</h3>
-        
-        <div style={{ marginBottom: '20px' }}>
-          <div style={{ marginBottom: '10px', color: '#aaa' }}>Name</div>
-          <div style={{ fontSize: '18px' }}>{currentUser.name}</div>
-        </div>
-        
-        <div style={{ marginBottom: '20px' }}>
-          <div style={{ marginBottom: '10px', color: '#aaa' }}>PRN</div>
-          <div style={{ fontSize: '18px' }}>{currentUser.prn}</div>
-        </div>
-        
-        <div style={{ marginBottom: '20px' }}>
-          <div style={{ marginBottom: '10px', color: '#aaa' }}>Email</div>
-          <div style={{ fontSize: '18px' }}>{currentUser.email}</div>
-        </div>
-        
-        <div style={{ marginBottom: '20px' }}>
-          <div style={{ marginBottom: '10px', color: '#aaa' }}>Mentor</div>
-          <div style={{ fontSize: '18px' }}>{getMentorName(currentUser.mentor_id)}</div>
-        </div>
-        
-        <div style={{ marginBottom: '20px' }}>
-          <div style={{ marginBottom: '10px', color: '#aaa' }}>GitHub Link</div>
+      <Box
+        sx={{
+          bgcolor: "#1c1c1c",
+          p: 4,
+          borderRadius: "12px",
+          maxWidth: 700,
+          color: "white",
+          boxShadow: "0 0 30px rgba(0,0,0,0.7)"
+        }}
+      >
+        <Typography level="h3" sx={{ color: "#e50914", mb: 3 }}>
+          Your Profile
+        </Typography>
+
+        <Typography level="body-lg"><b>Name:</b> {currentUser.name}</Typography>
+        <Typography level="body-lg"><b>Email:</b> {currentUser.email}</Typography>
+        <Typography level="body-lg"><b>PRN:</b> {currentUser.prn}</Typography>
+        <Typography level="body-lg"><b>Mentor:</b> {getMentorName(currentUser.mentor_id)}</Typography>
+
+        <Divider sx={{ my: 2, borderColor: "#333" }} />
+
+        <Typography level="body-lg" sx={{ mb: 2 }}>
+          <b>GitHub:</b>{" "}
           {currentUser.github_link ? (
-            <div>
-              <a 
-                href={currentUser.github_link} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                style={{ color: '#e50914', textDecoration: 'none' }}
-              >
-                {currentUser.github_link}
-              </a>
-            </div>
+            <a
+              href={currentUser.github_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#e50914" }}
+            >
+              {currentUser.github_link}
+            </a>
           ) : (
-            <div>No GitHub link provided</div>
+            <span style={{ color: "#777" }}>Not provided</span>
           )}
-        </div>
-        
-        <div style={{ marginTop: '30px' }}>
-          <h4 style={{ color: '#e50914', marginBottom: '15px' }}>Update GitHub Link</h4>
-          <input
-            type="text"
+        </Typography>
+
+        {/* Update GitHub */}
+        <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+          <Input
             placeholder="GitHub Profile URL"
-            value={updateStudent.github_link || ''}
-            onChange={(e) => setUpdateStudent(prev => ({ ...prev, github_link: e.target.value }))}
-            style={netflixInputStyle}
+            value={githubInput}
+            onChange={(e) => setGithubInput(e.target.value)}
+            sx={{
+              flex: 1,
+              bgcolor: "#333",
+              color: "white"
+            }}
           />
-          <button onClick={handleUpdateGitHubLink} style={netflixButtonStyle}>
-            Update GitHub Link
-          </button>
-        </div>
-        
-        <div style={{ marginTop: '30px' }}>
-          <button 
-            onClick={() => openUpdateModal(currentUser)} 
-            style={netflixButtonStyle}
+
+          <Button
+            sx={{
+              bgcolor: "#e50914",
+              color: "white",
+              "&:hover": { bgcolor: "#b2070e" }
+            }}
+            onClick={updateGithub}
           >
-            Edit Profile
-          </button>
-        </div>
-      </div>
+            Update GitHub
+          </Button>
+        </Box>
+      </Box>
     );
   };
+
+
 
   const renderProjectsTab = () => {
     if (!currentUser) return <div style={cardStyle}>Loading user data...</div>;
@@ -739,48 +792,41 @@ const StudentPanel = () => {
   const handleCreateProject = async () => {
     setFormError('');
     setFormSuccess('');
-    
+
     if (!projectTitle.trim()) {
       setFormError('Project title is required');
       return;
     }
-    
+
     setSubmitting(true);
-    
+
     try {
-      if (!currentUser || !currentUser.student_id) {
-        throw new Error('User information not available');
-      }
-      
-      const response = await axios.post('http://127.0.0.1:5000/projects', {
+      await axios.post('http://127.0.0.1:5000/projects', {
         title: projectTitle,
         description: projectDescription,
         github_link: projectGithubLink,
         student_id: currentUser.student_id,
         mentor_id: currentUser.mentor_id
       });
-      
-      setFormSuccess('Project created successfully!');
+
+      // refresh projects
+      await fetchStudentProjects(currentUser.student_id);
+
+      // reset form
       setProjectTitle('');
       setProjectDescription('');
       setProjectGithubLink('');
-      
-      // Refresh the projects list
-      fetchStudentProjects(currentUser.student_id);
-      
-      // Close the modal after 2 seconds
-      setTimeout(() => {
-        setShowCreateProjectModal(false);
-        setFormSuccess('');
-      }, 2000);
-      
+
+      // close modal
+      setShowCreateProjectModal(false);
+
     } catch (error) {
-      console.error('Error creating project:', error);
-      setFormError(error.response?.data?.message || 'Failed to create project. Please try again.');
+      setFormError(error.response?.data?.message || "Failed to create project");
     } finally {
       setSubmitting(false);
     }
   };
+
 
   return (
     <div style={containerStyle}>
@@ -795,20 +841,22 @@ const StudentPanel = () => {
         
         <div style={tabsContainerStyle}>
           <button 
-            style={activeTab === 'profile' ? activeTabStyle : tabStyle}
-            onClick={() => setActiveTab('profile')}
-          >
-            Profile
-            {activeTab === 'profile' && <div style={tabIndicatorStyle}></div>}
-          </button>
-          <button 
             style={activeTab === 'projects' ? activeTabStyle : tabStyle}
             onClick={() => setActiveTab('projects')}
           >
             Projects
             {activeTab === 'projects' && <div style={tabIndicatorStyle}></div>}
           </button>
+
+          <button 
+            style={activeTab === 'profile' ? activeTabStyle : tabStyle}
+            onClick={() => setActiveTab('profile')}
+          >
+            Profile
+            {activeTab === 'profile' && <div style={tabIndicatorStyle}></div>}
+          </button>
         </div>
+
         
         {activeTab === 'profile' ? renderProfileTab() : renderProjectsTab()}
         
@@ -897,13 +945,11 @@ const StudentPanel = () => {
               }}
             >
               <ModalClose sx={{ color: '#aaa' }} />
-              <ProjectDetails 
-                projectId={selectedProject.id || selectedProject.project_id}
+              <ProjectDetails
+                projectId={selectedProject.id}
                 userType="student"
-                onUpdateSuccess={() => {
-                  fetchStudentProjects(currentUser.student_id);
-                  setIsProjectModalOpen(false);
-                }}
+                onDelete={deleteProject}
+                onUpdateSuccess={() => fetchStudentProjects(currentUser.student_id)}
               />
             </ModalDialog>
           </Modal>

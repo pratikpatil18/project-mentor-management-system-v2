@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+
 const Navbar = () => {
   const [userType, setUserType] = useState("");
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get user type and data from localStorage
-    const storedUserType = localStorage.getItem('userType');
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    
-    setUserType(storedUserType || '');
-    
-    // Set username based on user type
-    if (userData) {
-      if (storedUserType === 'admin') {
-        setUserName(userData.admin_name || 'Admin');
-      } else if (storedUserType === 'mentor') {
-        setUserName(userData.faculty_name || 'Mentor');
-      } else if (storedUserType === 'student') {
-        setUserName(userData.student_name || 'Student');
-      }
-    }
+    const storedUserType = localStorage.getItem("userType");
+    const userData = JSON.parse(localStorage.getItem("userData")) || {};
+
+    setUserType(storedUserType || "");
+
+    const resolvedName =
+      userData.name ||
+      userData.mentor_name ||
+      userData.username ||
+      userData.admin_name ||
+      "User";
+
+    setUserName(resolvedName);
   }, []);
+
 
   const getNavTitle = () => {
     switch(userType) {
@@ -77,21 +76,29 @@ const Navbar = () => {
     fontWeight: 'bold',
   };
 
+  const linkStyle = {
+    cursor: "pointer",
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: "14px",
+    transition: "0.3s",
+  };
+
+
   return (
     <nav style={navbarStyle}>
       <h1 style={logoStyle}>{getNavTitle()}</h1>
-      <div style={navLinksStyle}>
-        {userType && (
-          <div style={userInfoStyle}>
-            <div style={userAvatarStyle}>
-              {userName.charAt(0).toUpperCase()}
-            </div>
-            <span>{userName}</span>
+
+      {userType && (
+        <div style={userInfoStyle}>
+          <div style={userAvatarStyle}>
+            {userName.charAt(0).toUpperCase()}
           </div>
-        )}
-      </div>
+          <span>{userName}</span>
+        </div>
+      )}
     </nav>
   );
-};
+  };
 
 export default Navbar;

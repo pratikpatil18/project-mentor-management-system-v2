@@ -72,7 +72,11 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
       const unread = response.data.filter(
         msg => !msg.is_read && msg.sender_type !== userType
       ).length;
-      setUnreadCount(unread);
+
+      if (!chatOpen && !embedded) {
+        setUnreadCount(unread);
+      }
+
       
       setLoading(false);
     } catch (err) {
@@ -160,14 +164,6 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
         >
           <Typography level="title-md" sx={{ color: 'white' }}>
             Project Chat
-            {unreadCount > 0 && (
-              <Badge 
-                badgeContent={unreadCount} 
-                color="danger" 
-                size="sm"
-                sx={{ ml: 1 }}
-              />
-            )}
           </Typography>
           <Button
             variant="plain"
@@ -294,24 +290,26 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
     <Box sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1000 }}>
       {/* Chat toggle button with notification badge */}
       <div className="button-scale">
-        <Badge badgeContent={unreadCount} color="danger">
-          <Button
-            variant="solid"
-            color="primary"
-            onClick={() => setChatOpen(!chatOpen)}
-            startDecorator={<ChatBubbleOutlineIcon />}
-            sx={{ 
-              borderRadius: '50%', 
-              p: 1.5,
-              width: 56,
-              height: 56,
-              backgroundColor: '#e50914',
-              '&:hover': { backgroundColor: '#b2070e' }
-            }}
-          >
-            {chatOpen ? 'X' : ''}
-          </Button>
-        </Badge>
+        <Button
+          variant="solid"
+          onClick={() => setChatOpen(!chatOpen)}
+          startDecorator={<ChatBubbleOutlineIcon />}
+          sx={{ 
+            borderRadius: '50%', 
+            width: 56,
+            height: 56,
+            bgcolor: '#e50914',
+            '&:hover': { bgcolor: '#b2070e' },
+            outline: 'none',
+            boxShadow: 'none'
+          }}
+        >
+          {chatOpen ? 'X' : ''}
+        </Button>
+
+
+
+
       </div>
 
       {/* Chat window */}
@@ -334,7 +332,7 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
           }}
         >
           {/* Chat header */}
-          <Box
+         <Box
             sx={{
               p: 2,
               bgcolor: '#0F0F0F',
@@ -347,16 +345,30 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
             <Typography level="title-md" sx={{ color: 'white' }}>
               Project Chat
             </Typography>
-            <Button
-              variant="plain"
-              color="neutral"
-              size="sm"
-              onClick={() => setChatOpen(false)}
-              sx={{ color: '#aaa' }}
-            >
-              Close
-            </Button>
+
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Button
+                variant="plain"
+                color="neutral"
+                size="sm"
+                onClick={fetchMessages}
+                sx={{ color: '#aaa' }}
+              >
+                Refresh
+              </Button>
+
+              <Button
+                variant="plain"
+                color="neutral"
+                size="sm"
+                onClick={() => setChatOpen(false)}
+                sx={{ color: '#aaa' }}
+              >
+                Close
+              </Button>
+            </Box>
           </Box>
+
 
           {/* Messages container */}
           <Box

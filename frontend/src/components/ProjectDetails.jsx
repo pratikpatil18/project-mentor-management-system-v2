@@ -15,7 +15,7 @@ import Grid from '@mui/joy/Grid';
 import Slider from '@mui/joy/Slider';
 import MessageChat from './MessageChat';
 
-const ProjectDetails = ({ projectId, userType, onUpdateSuccess }) => {
+  const ProjectDetails = ({ projectId, userType, projectStatus, onDelete, onUpdateSuccess }) => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,10 +35,16 @@ const ProjectDetails = ({ projectId, userType, onUpdateSuccess }) => {
     fetchProjectDetails();
     
     // Get user ID from localStorage based on user type
-    if (userType === 'student') {
+   if (userType === 'student') {
       const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-      setUserId(userData.student_id);
-    } else if (userType === 'mentor') {
+
+      setUserId(
+        userData.student_id || 
+        userData.id || 
+        userData.studentId
+      );
+    }
+    else if (userType === 'mentor') {
       const userData = JSON.parse(localStorage.getItem('userData') || '{}');
       setUserId(userData.mentor_id || userData.id);
     }
@@ -154,10 +160,10 @@ const ProjectDetails = ({ projectId, userType, onUpdateSuccess }) => {
         <Typography level="h4" sx={{ color: '#e50914' }}>
           {editMode ? 'Edit Project' : 'Project Details'}
         </Typography>
-        
-        {!editMode && (userType === 'student' || userType === 'mentor') && (
-          <div className="button-scale">
-            <Button 
+
+        <Box sx={{ display: "flex", gap: 2 }}>
+          {!editMode && (userType === 'student' || userType === 'mentor') && (
+            <Button
               onClick={() => setEditMode(true)}
               sx={{ 
                 bgcolor: '#333',
@@ -167,9 +173,24 @@ const ProjectDetails = ({ projectId, userType, onUpdateSuccess }) => {
             >
               Edit
             </Button>
-          </div>
-        )}
+          )}
+
+          {/* 🔴 DELETE button for students only when NOT approved */}
+          {!editMode && userType === "student" && project.status !== "Approved" && (
+            <Button
+              color="danger"
+              sx={{
+                bgcolor: "#b2070e",
+                "&:hover": { bgcolor: "#e50914" }
+              }}
+              onClick={() => onDelete(project.id)}
+            >
+              Delete
+            </Button>
+          )}
+        </Box>
       </Box>
+
       
       {editMode && userType === 'student' && (
         <Alert 
@@ -437,10 +458,10 @@ const ProjectDetails = ({ projectId, userType, onUpdateSuccess }) => {
       )}
       
       {/* Only show the message chat if not in edit mode and user ID is set */}
-      {!editMode && userId && project && (
+      {!editMode && project && (
         <MessageChat 
           projectId={project.id} 
-          userId={userId} 
+          userId={userId || 0}
           userType={userType}
         />
       )}
