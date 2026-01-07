@@ -5,9 +5,6 @@ from app.models import Student
 
 router = APIRouter()
 
-# -----------------------------
-# STUDENT LOGIN
-# -----------------------------
 @router.post("/login")
 def student_login(data: dict, db: Session = Depends(get_db)):
     student = db.query(Student).filter(
@@ -27,16 +24,11 @@ def student_login(data: dict, db: Session = Depends(get_db)):
         "github_link": student.github_link
     }
 
-# -----------------------------
-# GET ALL STUDENTS (Admin)
-# -----------------------------
 @router.get("/student")
 def get_students(db: Session = Depends(get_db)):
     return db.query(Student).all()
 
-# -----------------------------
-# STUDENT UPDATES ONLY GITHUB
-# -----------------------------
+
 @router.put("/{student_id}/github")
 def update_github(student_id: int, data: dict, db: Session = Depends(get_db)):
     student = db.query(Student).filter(Student.student_id == student_id).first()

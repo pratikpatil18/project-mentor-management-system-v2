@@ -5,9 +5,6 @@ from app.models import Student, Mentor, Project, Admin
 
 router = APIRouter()
 
-# -------------------------------
-# ADMIN LOGIN
-# -------------------------------
 @router.post("/login")
 def admin_login(data: dict, db: Session = Depends(get_db)):
     admin = db.query(Admin).filter(
@@ -23,9 +20,7 @@ def admin_login(data: dict, db: Session = Depends(get_db)):
         "username": admin.username
     }
 
-# -------------------------------
-# STUDENTS
-# -------------------------------
+
 @router.get("/students")
 def get_students(db: Session = Depends(get_db)):
     results = (
@@ -70,7 +65,7 @@ def add_student(data: dict, db: Session = Depends(get_db)):
 @router.delete("/students/{student_id}")
 def delete_student(student_id: int, db: Session = Depends(get_db)):
 
-    # Block if student has approved projects
+    
     approved = db.query(Project).filter(
         Project.student_id == student_id,
         Project.status == "Approved"
@@ -82,13 +77,11 @@ def delete_student(student_id: int, db: Session = Depends(get_db)):
             detail="Student has approved projects and cannot be deleted"
         )
 
-    # Delete non-approved projects
     db.query(Project).filter(
         Project.student_id == student_id,
         Project.status != "Approved"
     ).delete(synchronize_session=False)
 
-    # Remove mentor link
     db.query(Student).filter(
         Student.student_id == student_id
     ).update({"mentor_id": None})
@@ -144,9 +137,7 @@ def admin_update_student(student_id: int, data: dict, db: Session = Depends(get_
     db.commit()
     return {"message": "Student updated successfully"}
 
-# -------------------------------
-# MENTORS
-# -------------------------------
+
 @router.get("/mentors")
 def get_mentors(db: Session = Depends(get_db)):
     return db.query(Mentor).all()
@@ -167,15 +158,12 @@ def add_mentor(data: dict, db: Session = Depends(get_db)):
 @router.delete("/mentors/{mentor_id}")
 def delete_mentor(mentor_id: int, db: Session = Depends(get_db)):
 
-    # 1. Delete all projects under this mentor
     db.query(Project).filter(Project.mentor_id == mentor_id).delete(synchronize_session=False)
 
-    # 2. Unassign all students
     db.query(Student).filter(Student.mentor_id == mentor_id).update(
         {"mentor_id": None}
     )
 
-    # 3. Delete the mentor
     mentor = db.query(Mentor).filter(Mentor.mentor_id == mentor_id).first()
     if not mentor:
         raise HTTPException(404, "Mentor not found")
@@ -212,9 +200,7 @@ def admin_update_mentor(mentor_id: int, data: dict, db: Session = Depends(get_db
     return {"message": "Mentor updated successfully"}
 
 
-# -------------------------------
-# PROJECTS
-# -------------------------------
+
 @router.get("/projects")
 def get_projects(db: Session = Depends(get_db)):
     results = (

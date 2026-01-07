@@ -121,7 +121,7 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
-    # Block deleting approved projects
+    
     if project.status == "Approved":
         raise HTTPException(status_code=403, detail="Approved projects cannot be deleted")
 

@@ -5,9 +5,7 @@ from app.models import Mentor, Student, Project
 
 router = APIRouter()
 
-# ----------------------------
-# Mentor Login
-# ----------------------------
+
 @router.post("/login")
 def mentor_login(data: dict, db: Session = Depends(get_db)):
     mentor = db.query(Mentor).filter(
@@ -19,8 +17,8 @@ def mentor_login(data: dict, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     return {
-        "id": mentor.mentor_id,          # 👈 REQUIRED
-        "mentor_id": mentor.mentor_id,   # 👈 REQUIRED
+        "id": mentor.mentor_id,
+        "mentor_id": mentor.mentor_id,
         "name": mentor.name,
         "email": mentor.email,
         "department": mentor.department,
@@ -28,16 +26,10 @@ def mentor_login(data: dict, db: Session = Depends(get_db)):
     }
 
 
-# ----------------------------
-# Get all mentors (Admin)
-# ----------------------------
 @router.get("/")
 def get_all_mentors(db: Session = Depends(get_db)):
     return db.query(Mentor).all()
 
-# ----------------------------
-# Mentor Dashboard – Projects
-# ----------------------------
 @router.get("/projects/{mentor_id}")
 def get_mentor_projects(mentor_id: int, db: Session = Depends(get_db)):
     rows = (
@@ -70,9 +62,7 @@ def get_mentor_projects(mentor_id: int, db: Session = Depends(get_db)):
 
 
 
-# ----------------------------
-# Approve / Reject Project
-# ----------------------------
+
 @router.put("/projects/{project_id}/status")
 def update_project_status(project_id: int, data: dict, db: Session = Depends(get_db)):
     project = db.query(Project).filter(Project.id == project_id).first()
