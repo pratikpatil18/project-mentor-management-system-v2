@@ -79,19 +79,25 @@ const MentorPanel = () => {
       let endpoint;
       let payload;
       
-      if (actionType === 'approve' || actionType === 'reject') {
-        endpoint = `/faculty/projects/${selectedProject.id}/status`;
-        payload = {
+      if (actionType === "approve" || actionType === "reject") {
+        const endpoint = `/faculty/projects/${selectedProject.id}/status`;
+
+        const payload = {
           mentor_id: userData.id,
-          status: actionType === 'approve' ? 'Approved' : 'Rejected',
+          status: actionType === "approve" ? "Approved" : "Rejected",
           feedback: feedback
         };
-      } else if (actionType === 'feedback') {
-        endpoint = `/projects/${selectedProject.id}`;
-        payload = {
-          mentor_feedback: feedback
-        };
-      }
+
+        await api.put(endpoint, payload);
+      } else if (actionType === "feedback") {
+          const endpoint = `/projects/${selectedProject.id}`;
+
+          const payload = {
+            mentor_feedback: feedback
+          };
+
+          await api.put(endpoint, payload);
+        }
       
       console.log("Sending request to:", endpoint);
       console.log("With payload:", payload);
