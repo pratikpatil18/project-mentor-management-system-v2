@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+
+  mysql:
+    image: mysql:8
+    container_name: pmms-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: project_mentor_management
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build: ./backend
+    container_name: pmms-backend
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: project_mentor_management
+      DB_PORT: 3306
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build: ./frontend
+    container_name: pmms-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  mysql_data:
