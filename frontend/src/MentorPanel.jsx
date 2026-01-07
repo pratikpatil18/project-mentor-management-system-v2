@@ -28,20 +28,16 @@ const MentorPanel = () => {
       const userData = JSON.parse(localStorage.getItem('userData'));
       const response = await axios.get(`http://127.0.0.1:5000/faculty/projects/${userData.id}`);
       
-      // Get the student IDs from projects to fetch their GitHub links
       const studentIds = response.data.map(project => project.student_id);
       
-      // Fetch students details to get GitHub links
       const uniqueStudentIds = [...new Set(studentIds)];
       const studentsResponse = await axios.get(`http://127.0.0.1:5000/faculty/${userData.id}/students`);
       
-      // Create a map of student ID to GitHub link
       const studentGitHubMap = {};
       studentsResponse.data.forEach(student => {
         studentGitHubMap[student.student_id] = student.github_link;
       });
       
-      // Map student GitHub links to projects
       const projectsWithGitHub = response.data.map(project => {
         return {
           ...project,
@@ -74,19 +70,16 @@ const MentorPanel = () => {
     try {
       if (!selectedProject) return;
       
-      // Clear any previous error messages
       setError('');
       setActionSuccess('');
       setSubmitting(true);
       
       const userData = JSON.parse(localStorage.getItem('userData'));
       
-      // Different endpoint based on action type
       let endpoint;
       let payload;
       
       if (actionType === 'approve' || actionType === 'reject') {
-        // For status changes (approve/reject)
         endpoint = `http://127.0.0.1:5000/faculty/projects/${selectedProject.id}/status`;
         payload = {
           mentor_id: userData.id,
@@ -94,7 +87,6 @@ const MentorPanel = () => {
           feedback: feedback
         };
       } else if (actionType === 'feedback') {
-        // For feedback-only updates
         endpoint = `http://127.0.0.1:5000/projects/${selectedProject.id}`;
         payload = {
           mentor_feedback: feedback
@@ -107,14 +99,12 @@ const MentorPanel = () => {
       const response = await axios.put(endpoint, payload);
       
       if (response.status === 200) {
-        // Set success message based on action type
         setActionSuccess(
           actionType === 'approve' ? 'Project approved successfully!' :
           actionType === 'reject' ? 'Project rejected successfully!' :
           'Feedback provided successfully!'
         );
         
-        // Update the project status locally
         setProjects(projects.map(project => 
           project.id === selectedProject.id 
             ? { 
@@ -127,14 +117,12 @@ const MentorPanel = () => {
             : project
         ));
         
-        // Close modal after a short delay to show success message
         setTimeout(() => {
           setActionModalOpen(false);
           setSelectedProject(null);
           setFeedback('');
           setActionSuccess('');
           
-          // Refresh projects data
           fetchMentorProjects();
         }, 1500);
       }

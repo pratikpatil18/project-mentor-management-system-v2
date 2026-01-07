@@ -10,7 +10,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is authenticated as admin
     const userType = localStorage.getItem('userType');
     if (userType !== 'admin') {
       navigate('/');
@@ -35,10 +34,8 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
-    // Clear user data from localStorage
     localStorage.removeItem('userType');
     localStorage.removeItem('userData');
-    // Navigate to login page
     navigate('/');
   };
 

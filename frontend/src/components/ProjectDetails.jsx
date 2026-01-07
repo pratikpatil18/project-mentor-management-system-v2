@@ -23,7 +23,6 @@ import MessageChat from './MessageChat';
   const [editMode, setEditMode] = useState(false);
   const [userId, setUserId] = useState(null);
   
-  // Editable fields
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [githubLink, setGithubLink] = useState('');
@@ -34,7 +33,6 @@ import MessageChat from './MessageChat';
   useEffect(() => {
     fetchProjectDetails();
     
-    // Get user ID from localStorage based on user type
    if (userType === 'student') {
       const userData = JSON.parse(localStorage.getItem('userData') || '{}');
 
@@ -56,10 +54,8 @@ import MessageChat from './MessageChat';
       const response = await axios.get(`http://127.0.0.1:5000/projects/${projectId}`);
       setProject(response.data);
       
-      // Store the internal numeric id for use with message chat
       const internalProjectId = response.data.id;
       
-      // Initialize form fields
       setTitle(response.data.title);
       setDescription(response.data.description || '');
       setGithubLink(response.data.github_link || '');
@@ -84,7 +80,6 @@ import MessageChat from './MessageChat';
         progress_percentage: progress
       };
       
-      // Add fields that only mentors can update
       if (userType === 'mentor') {
         updateData.status = status;
         updateData.mentor_feedback = feedback;
@@ -100,7 +95,6 @@ import MessageChat from './MessageChat';
         onUpdateSuccess();
       }
       
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccessMessage('');
       }, 3000);
@@ -108,7 +102,6 @@ import MessageChat from './MessageChat';
       console.error('Error updating project:', error);
       setError('Failed to update project. Please try again.');
       
-      // Clear error message after 3 seconds
       setTimeout(() => {
         setError(null);
       }, 3000);

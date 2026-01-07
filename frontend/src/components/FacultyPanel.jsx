@@ -21,7 +21,6 @@ const FacultyPanel = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is authenticated as mentor
     const userType = localStorage.getItem('userType');
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     
@@ -59,10 +58,8 @@ const FacultyPanel = () => {
   };
 
   const handleLogout = () => {
-    // Clear user data from localStorage
     localStorage.removeItem('userType');
     localStorage.removeItem('userData');
-    // Navigate to login page
     navigate('/');
   };
 

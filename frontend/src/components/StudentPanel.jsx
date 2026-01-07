@@ -62,7 +62,6 @@ const StudentPanel = () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
   const studentName = userData?.name || "Student";
 
-  // New project form states
   const [projectTitle, setProjectTitle] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [projectGithubLink, setProjectGithubLink] = useState('');
@@ -71,13 +70,11 @@ const StudentPanel = () => {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  // Add state for tracking feedback and notifications
   const [lastFeedbackCheck, setLastFeedbackCheck] = useState(Date.now());
   const [newFeedbackCount, setNewFeedbackCount] = useState(0);
   const [feedbackNotificationVisible, setFeedbackNotificationVisible] = useState(false);
 
   useEffect(() => {
-    // Check if user is authenticated as student
     const userType = localStorage.getItem('userType');
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     
@@ -97,14 +94,11 @@ const StudentPanel = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    // Clear user data from localStorage
     localStorage.removeItem('userType');
     localStorage.removeItem('userData');
-    // Navigate to login page
     navigate('/');
   };
 
-  // Container styles
   const containerStyle = {
     backgroundColor: '#141414',
     color: '#fff',
@@ -202,63 +196,48 @@ const StudentPanel = () => {
     }
   };
 
-  // Add function to check for new feedback
   const checkForNewFeedback = (projectsData) => {
     if (!projectsData || projectsData.length === 0) return;
     
-    // Get the last check time from localStorage or use the current state
     const lastCheck = localStorage.getItem('lastFeedbackCheck') 
       ? parseInt(localStorage.getItem('lastFeedbackCheck')) 
       : lastFeedbackCheck;
     
-    // Find projects with feedback that was updated after the last check
     const projectsWithNewFeedback = projectsData.filter(project => {
       if (!project.mentor_feedback) return false;
       
-      // Parse the last_updated timestamp
       const feedbackTime = new Date(project.last_updated || project.submission_date).getTime();
       return feedbackTime > lastCheck;
     });
     
-    // Update the notification state if there are new feedbacks
     if (projectsWithNewFeedback.length > 0) {
       setNewFeedbackCount(projectsWithNewFeedback.length);
       setFeedbackNotificationVisible(true);
       
-      // Auto-hide the notification after 5 seconds
       setTimeout(() => {
         setFeedbackNotificationVisible(false);
       }, 5000);
     }
     
-    // Update the last check time
     const now = Date.now();
     setLastFeedbackCheck(now);
     localStorage.setItem('lastFeedbackCheck', now.toString());
   };
 
-  // Modify fetchStudentProjects to check for new feedback
   const fetchStudentProjects = async (studentId) => {
     try {
       setLoading(true);
-      // Use specific endpoint that includes complete project details
       const response = await axios.get(`http://127.0.0.1:5000/projects/student/${studentId}`);
       
-      // Log the response data to check the fields
       console.log("Project data from API:", response.data);
       
-      // Process the data to ensure we have all required fields
       const processedData = response.data.map(project => ({
         ...project,
-        // Ensure mentor_feedback is available or set to empty string
         mentor_feedback: project.mentor_feedback || '',
-        // Set status to a default if not provided
         status: project.status || 'Pending',
-        // Ensure progress percentage is available or default to 0
         progress_percentage: project.progress_percentage || 0
       }));
       
-      // Check for new feedback
       checkForNewFeedback(processedData);
       
       setProjects(processedData);
@@ -323,7 +302,6 @@ const StudentPanel = () => {
       alert("Student updated successfully.");
       fetchStudents();
       
-      // If the current user is updating their profile, update localStorage
       if (currentUser && currentUser.student_id === selectedStudentId) {
         const updatedUserData = { ...currentUser, ...updateStudent };
         localStorage.setItem('userData', JSON.stringify(updatedUserData));
@@ -352,12 +330,10 @@ const StudentPanel = () => {
       
       alert("GitHub link updated successfully");
       
-      // Update current user in state and localStorage
       const updatedUserData = { ...currentUser, github_link: updateStudent.github_link };
       localStorage.setItem('userData', JSON.stringify(updatedUserData));
       setCurrentUser(updatedUserData);
       
-      // Refresh student data
       fetchStudents();
       
     } catch (err) {
@@ -372,19 +348,16 @@ const StudentPanel = () => {
     }
   };
 
-  // Add a function to mark feedback as read when opening a project
   const openProjectDetails = (project) => {
     setSelectedProject(project);
     setIsProjectModalOpen(true);
     
-    // Mark this project's feedback as read by updating the last check time
-    // Only if this project has feedback
+    
     if (project.mentor_feedback) {
       const now = Date.now();
       setLastFeedbackCheck(now);
       localStorage.setItem('lastFeedbackCheck', now.toString());
       
-      // Update the notification count
       if (newFeedbackCount > 0) {
         setNewFeedbackCount(prevCount => Math.max(0, prevCount - 1));
       }
@@ -403,7 +376,6 @@ const StudentPanel = () => {
       return;
     }
 
-    // Basic GitHub URL validation
     if (!githubInput.startsWith("https://github.com/")) {
       alert("Please enter a valid GitHub profile URL");
       return;
@@ -457,7 +429,7 @@ const StudentPanel = () => {
     backgroundColor: '#1a1a1a',
     color: '#ddd',
     borderRadius: '5px',
-    overflow: 'hidden', // To contain the border-radius of header/body
+    overflow: 'hidden', 
   };
 
   const netflixTableHeaderStyle = {
@@ -511,7 +483,6 @@ const StudentPanel = () => {
 
       alert("Project deleted");
 
-      // Remove from UI
       setProjects(prev => prev.filter(p => p.id !== projectId));
       setSelectedProject(null);
 
@@ -596,7 +567,6 @@ const StudentPanel = () => {
   const renderProjectsTab = () => {
     if (!currentUser) return <div style={cardStyle}>Loading user data...</div>;
     
-    // Convert to using Material UI Joy components for consistency
     return (
       <>
         {feedbackNotificationVisible && (
@@ -773,7 +743,6 @@ const StudentPanel = () => {
     );
   };
 
-  // Add this function to get status color
   const getStatusColor = (status) => {
     if (!status) return '#777';
     
@@ -809,15 +778,12 @@ const StudentPanel = () => {
         mentor_id: currentUser.mentor_id
       });
 
-      // refresh projects
       await fetchStudentProjects(currentUser.student_id);
 
-      // reset form
       setProjectTitle('');
       setProjectDescription('');
       setProjectGithubLink('');
 
-      // close modal
       setShowCreateProjectModal(false);
 
     } catch (error) {

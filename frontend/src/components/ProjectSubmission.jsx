@@ -42,7 +42,6 @@ const ProjectSubmission = ({ studentId, mentorId, onSubmissionSuccess }) => {
         onSubmissionSuccess(response.data);
       }
       
-      // Clear form after successful submission
       setProjectData({ title: '', description: '' });
       
     } catch (err) {

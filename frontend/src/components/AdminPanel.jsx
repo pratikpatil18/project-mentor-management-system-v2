@@ -82,17 +82,13 @@ const AdminPanel = () => {
         axios.get("http://127.0.0.1:5000/admin/projects")
       ]);
       
-      // Sort students by student_id
       const sortedStudents = studentsRes.data.sort((a, b) => a.student_id - b.student_id);
       setStudents(sortedStudents);
       
-      // Sort mentors by mentor_id
       const sortedMentors = mentorsRes.data.sort((a, b) => a.mentor_id - b.mentor_id);
       setMentors(sortedMentors);
       
-      // Sort projects by project_id (extracting numeric part from 'PRJ1001' format)
       const sortedProjects = projectsRes.data.sort((a, b) => {
-        // Extract numeric part from project_id (e.g., 'PRJ1001' -> 1001)
         const idA = parseInt(a.project_id.toString().replace(/\D/g,''));
         const idB = parseInt(b.project_id.toString().replace(/\D/g,''));
         return idA - idB;

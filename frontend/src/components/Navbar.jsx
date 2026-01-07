@@ -38,8 +38,8 @@ const Navbar = () => {
   };
 
   const navbarStyle = {
-    backgroundColor: '#141414', // Netflix dark background
-    color: '#fff', // White text
+    backgroundColor: '#141414',
+    color: '#fff', 
     padding: '15px 20px',
     display: 'flex',
     justifyContent: 'space-between',

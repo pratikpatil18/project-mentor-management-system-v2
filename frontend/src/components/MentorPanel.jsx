@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import ProjectChat from "../components/MessageChat";   // or correct path
+import ProjectChat from "../components/MessageChat";   
 import { Sheet, Typography, Button, Table, Divider, Chip, Modal, ModalDialog, Link, Box, Textarea, FormControl, FormLabel, Stack, IconButton} from '@mui/joy';
 import Navbar from "../components/Navbar";
 
@@ -32,7 +32,6 @@ const MentorPanel = () => {
 
     if (!userData) return;
 
-    // Always use the correct mentor id
     const mentorId = userData.mentor_id || userData.id;
 
     axios
@@ -88,7 +87,6 @@ const MentorPanel = () => {
       
       const userData = JSON.parse(localStorage.getItem('userData'));
       
-      // If it's just providing feedback, use a different endpoint that only updates feedback
       if (actionType === 'feedback') {
         const feedbackEndpoint = `http://127.0.0.1:5000/projects/${selectedProject.id}`;
         const feedbackPayload = {
@@ -97,7 +95,6 @@ const MentorPanel = () => {
         
         await axios.put(feedbackEndpoint, feedbackPayload);
       } else {
-        // For approve/reject actions, use the status update endpoint
         const endpoint = `http://127.0.0.1:5000/faculty/projects/${selectedProject.id}/status`;
         
         const payload = {
@@ -108,7 +105,6 @@ const MentorPanel = () => {
         
         await axios.put(endpoint, payload);
         
-        // Update the project status locally only for approve/reject actions
         setProjects(projects.map(project => 
           project.id === selectedProject.id 
             ? { ...project, status: actionType === 'approve' ? 'Approved' : 'Rejected' } 
@@ -120,7 +116,6 @@ const MentorPanel = () => {
       setSelectedProject(null);
       setFeedback('');
       
-      // Refresh projects data
       fetchMentorProjects();
       
     } catch (err) {

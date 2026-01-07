@@ -52,11 +52,9 @@ const Login = () => {
       
       const response = await axios.post(endpoint, credentials);
       
-      // Store user info and token in localStorage for session management
       localStorage.setItem('userType', userType);
       localStorage.setItem('userData', JSON.stringify(response.data));
       
-      // Redirect based on user type
       if (userType === 'admin') {
         navigate('/admin');
       } else if (userType === 'mentor') {

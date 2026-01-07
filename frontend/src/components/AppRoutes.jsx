@@ -5,17 +5,14 @@ import StudentPanel from './StudentPanel';
 import MentorPanel from './MentorPanel';
 import AdminPanel from './AdminPanel';
 
-// Protected route component that redirects to login if not authenticated
 const ProtectedRoute = ({ element, allowedUserTypes }) => {
   const userType = localStorage.getItem('userType');
   const isAuthenticated = !!userType;
   
-  // Check if user is authenticated and has the allowed user type
   if (isAuthenticated && allowedUserTypes.includes(userType)) {
     return element;
   }
   
-  // Redirect to login if not authenticated or not authorized
   return <Navigate to="/" replace />;
 };
 

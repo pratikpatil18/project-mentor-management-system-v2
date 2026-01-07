@@ -10,33 +10,29 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [chatOpen, setChatOpen] = useState(embedded); // Always open if embedded
+  const [chatOpen, setChatOpen] = useState(embedded); 
   const messagesEndRef = useRef(null);
 
-  // Fetch messages on component mount and when chat is opened
   useEffect(() => {
     if ((chatOpen || embedded) && projectId) {
       fetchMessages();
     }
   }, [projectId, chatOpen, embedded]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (chatOpen || embedded) {
       scrollToBottom();
     }
   }, [messages, chatOpen, embedded]);
 
-  // Mark messages as read when chat is opened
   useEffect(() => {
     if ((chatOpen || embedded) && unreadCount > 0 && projectId) {
       markMessagesAsRead();
     }
   }, [chatOpen, embedded, unreadCount]);
 
-  // Fetch unread message count periodically
   useEffect(() => {
-    if (!projectId) return; // Skip if no valid project ID
+    if (!projectId) return; 
     
     const fetchUnreadCount = async () => {
       try {
@@ -51,10 +47,9 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
     };
 
     fetchUnreadCount();
-    // Only poll for updates if not embedded
     let interval;
     if (!embedded) {
-      interval = setInterval(fetchUnreadCount, 10000); // Check every 10 seconds
+      interval = setInterval(fetchUnreadCount, 10000); 
     }
 
     return () => {
@@ -68,7 +63,6 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
       const response = await axios.get(`http://127.0.0.1:5000/messages/project/${projectId}`);
       setMessages(response.data);
       
-      // Calculate unread messages
       const unread = response.data.filter(
         msg => !msg.is_read && msg.sender_type !== userType
       ).length;
@@ -114,15 +108,12 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
         message_text: newMessage
       });
 
-      // Add new message to the list
       if (response.data.data) {
         setMessages(prev => [...prev, response.data.data]);
       } else {
-        // Refresh messages if we couldn't get the new message details
         fetchMessages();
       }
       
-      // Clear the input
       setNewMessage('');
     } catch (err) {
       console.error('Error sending message:', err);
@@ -134,13 +125,11 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Format timestamp
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // If embedded, render just the chat interface without the floating button
   if (embedded) {
     return (
       <Box sx={{ 
@@ -285,7 +274,6 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
     );
   }
 
-  // Original floating chat UI
   return (
     <Box sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1000 }}>
       {/* Chat toggle button with notification badge */}
