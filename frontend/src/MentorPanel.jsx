@@ -80,14 +80,14 @@ const MentorPanel = () => {
       let payload;
       
       if (actionType === 'approve' || actionType === 'reject') {
-        endpoint = `http://127.0.0.1:5000/faculty/projects/${selectedProject.id}/status`;
+        endpoint = `/faculty/projects/${selectedProject.id}/status`;
         payload = {
           mentor_id: userData.id,
           status: actionType === 'approve' ? 'Approved' : 'Rejected',
           feedback: feedback
         };
       } else if (actionType === 'feedback') {
-        endpoint = `http://127.0.0.1:5000/projects/${selectedProject.id}`;
+        endpoint = `/projects/${selectedProject.id}`;
         payload = {
           mentor_feedback: feedback
         };
