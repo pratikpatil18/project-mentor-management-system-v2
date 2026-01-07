@@ -117,7 +117,13 @@ const AdminPanel = () => {
         return;
       }
 
-      await api.post("/admin/students", newStudent);
+      const payload = {
+        ...newStudent,
+        mentor_id: newStudent.mentor_id === "" ? null : newStudent.mentor_id,
+      };
+
+      await api.post("/admin/students", payload);
+
       setShowAddStudent(false);
       setNewStudent({
         name: "",
@@ -661,13 +667,20 @@ const AdminPanel = () => {
 
           <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
             <Button onClick={async () => {
+              const payload = {
+                ...selectedStudent,
+                mentor_id: selectedStudent.mentor_id === "" ? null : selectedStudent.mentor_id,
+              };
+
               await api.put(
                 `/admin/students/${selectedStudent.student_id}`,
-                selectedStudent
+                payload
               );
+
               setShowEditStudent(false);
               fetchData();
             }}>
+
               Save Changes
             </Button>
           </Stack>
