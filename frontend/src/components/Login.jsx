@@ -50,7 +50,7 @@ const Login = () => {
           return;
       }
       
-      const response = await axios.post(endpoint, credentials);
+      const response = await api.post(endpoint, credentials);
       
       localStorage.setItem('userType', userType);
       localStorage.setItem('userData', JSON.stringify(response.data));

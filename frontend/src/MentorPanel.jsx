@@ -26,12 +26,12 @@ const MentorPanel = () => {
   const fetchMentorProjects = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem('userData'));
-      const response = await axios.get(`http://127.0.0.1:5000/faculty/projects/${userData.id}`);
+      const response = await api.get(`/faculty/projects/${userData.id}`);
       
       const studentIds = response.data.map(project => project.student_id);
       
       const uniqueStudentIds = [...new Set(studentIds)];
-      const studentsResponse = await axios.get(`http://127.0.0.1:5000/faculty/${userData.id}/students`);
+      const studentsResponse = await api.get(`/faculty/${userData.id}/students`);
       
       const studentGitHubMap = {};
       studentsResponse.data.forEach(student => {
@@ -96,7 +96,7 @@ const MentorPanel = () => {
       console.log("Sending request to:", endpoint);
       console.log("With payload:", payload);
       
-      const response = await axios.put(endpoint, payload);
+      const response = await api.put(endpoint, payload);
       
       if (response.status === 200) {
         setActionSuccess(

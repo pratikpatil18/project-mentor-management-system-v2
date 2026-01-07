@@ -103,7 +103,7 @@ const MentorPanel = () => {
           feedback: feedback
         };
         
-        await axios.put(endpoint, payload);
+        await api.put(endpoint, payload);
         
         setProjects(projects.map(project => 
           project.id === selectedProject.id 
