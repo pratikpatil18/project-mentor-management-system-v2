@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";   
 import Navbar from "./Navbar";
 import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
@@ -41,7 +41,7 @@ const FacultyPanel = () => {
 
   const fetchAssignedStudents = async (mentorId) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:5000/faculty/${mentorId}/students`);
+      const response = await api.get(`/faculty/${mentorId}/students`);
       setAssignedStudents(response.data);
     } catch (error) {
       console.error("Error fetching assigned students:", error);
@@ -50,7 +50,7 @@ const FacultyPanel = () => {
 
   const fetchMentorProjects = async (mentorId) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:5000/projects/mentor/${mentorId}`);
+      const response = await api.get(`/projects/mentor/${mentorId}`);
       setStudentProjects(response.data);
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -211,7 +211,7 @@ const FacultyPanel = () => {
 
   const fetchFaculty = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:5000/faculty");
+      const response = await api.get("/faculty");
       setFaculty(response.data);
     } catch (error) {
       alert(error.message);
@@ -236,7 +236,7 @@ const FacultyPanel = () => {
       return;
     }
     try {
-      await axios.post("http://localhost:5000/faculty", { faculty_id: facultyId, name });
+      await api.post("/faculty", { faculty_id: facultyId, name });
       fetchFaculty();
       setName("");
       setFacultyId("");

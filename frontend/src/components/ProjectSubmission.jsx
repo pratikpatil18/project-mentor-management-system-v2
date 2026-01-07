@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from "../api";   
 
 const ProjectSubmission = ({ studentId, mentorId, onSubmissionSuccess }) => {
   const [projectData, setProjectData] = useState({
@@ -29,7 +29,7 @@ const ProjectSubmission = ({ studentId, mentorId, onSubmissionSuccess }) => {
     }
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/projects', {
+      const response = await api.post('/projects', {
         title: projectData.title,
         description: projectData.description,
         student_id: studentId,

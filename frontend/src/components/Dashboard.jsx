@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";   
 import Navbar from "./Navbar";
 
 const Dashboard = () => {
@@ -23,7 +23,7 @@ const Dashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get("http://127.0.0.1:5000/student/student");
+      const response = await api.get("/student/student");
       setStudentsWithMentors(response.data);
       setLoading(false);
     } catch (err) {

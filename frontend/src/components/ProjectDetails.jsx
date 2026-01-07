@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from "../api";   
 import Typography from '@mui/joy/Typography';
 import Button from '@mui/joy/Button';
 import FormControl from '@mui/joy/FormControl';
@@ -51,7 +51,7 @@ import MessageChat from './MessageChat';
   const fetchProjectDetails = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://127.0.0.1:5000/projects/${projectId}`);
+      const response = await api.get(`/projects/${projectId}`);
       setProject(response.data);
       
       const internalProjectId = response.data.id;
@@ -84,9 +84,9 @@ import MessageChat from './MessageChat';
         updateData.status = status;
         updateData.mentor_feedback = feedback;
       }
-      
-      await axios.put(`http://127.0.0.1:5000/projects/${projectId}`, updateData);
-      
+
+      await api.put(`/projects/${projectId}`, updateData);
+
       setSuccessMessage('Project updated successfully!');
       setEditMode(false);
       fetchProjectDetails();

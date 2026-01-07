@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from "../api";   
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ProjectChat from "../components/MessageChat";   
 import { Sheet, Typography, Button, Table, Divider, Chip, Modal, ModalDialog, Link, Box, Textarea, FormControl, FormLabel, Stack, IconButton} from '@mui/joy';
@@ -34,8 +34,8 @@ const MentorPanel = () => {
 
     const mentorId = userData.mentor_id || userData.id;
 
-    axios
-      .get(`http://127.0.0.1:5000/faculty/mentor/${mentorId}/students`)
+    api
+      .get(`/faculty/mentor/${mentorId}/students`)
       .then(res => setStudents(res.data))
       .catch(err => {
         console.error("Failed to load mentor students", err);
@@ -52,7 +52,7 @@ const MentorPanel = () => {
   const fetchMentorProjects = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem('userData'));
-      const response = await axios.get(`http://127.0.0.1:5000/faculty/projects/${userData.id}`);
+      const response = await api.get(`/faculty/projects/${userData.id}`);
       setProjects(response.data);
       setLoading(false);
     } catch (err) {
@@ -88,14 +88,14 @@ const MentorPanel = () => {
       const userData = JSON.parse(localStorage.getItem('userData'));
       
       if (actionType === 'feedback') {
-        const feedbackEndpoint = `http://127.0.0.1:5000/projects/${selectedProject.id}`;
+        const feedbackEndpoint = `/projects/${selectedProject.id}`;
         const feedbackPayload = {
           mentor_feedback: feedback
         };
-        
-        await axios.put(feedbackEndpoint, feedbackPayload);
+
+        await api.put(feedbackEndpoint, feedbackPayload);
       } else {
-        const endpoint = `http://127.0.0.1:5000/faculty/projects/${selectedProject.id}/status`;
+        const endpoint = `/faculty/projects/${selectedProject.id}/status`;
         
         const payload = {
           mentor_id: userData.id,

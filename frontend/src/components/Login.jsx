@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from "../api";   
 
 const Login = () => {
   const [userType, setUserType] = useState('');
@@ -37,13 +37,13 @@ const Login = () => {
       
       switch (userType) {
         case 'admin':
-          endpoint = 'http://127.0.0.1:5000/admin/login';
+          endpoint = '/admin/login';
           break;
         case 'mentor':
-          endpoint = 'http://127.0.0.1:5000/faculty/login';
+          endpoint = '/faculty/login';
           break;
         case 'student':
-          endpoint = 'http://127.0.0.1:5000/student/login';
+          endpoint = '/student/login';
           break;
         default:
           setError('Please select a user type');

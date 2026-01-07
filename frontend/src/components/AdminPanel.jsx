@@ -7,7 +7,8 @@ import MoreVert from "@mui/icons-material/MoreVert";
 import Navbar from "./Navbar";
 
 
-import axios from "axios";
+import api from "../api";   
+
 import {
   Sheet,
   Typography,
@@ -77,9 +78,9 @@ const AdminPanel = () => {
     setError("");
     try {
       const [studentsRes, mentorsRes, projectsRes] = await Promise.all([
-        axios.get("http://127.0.0.1:5000/admin/students"),
-        axios.get("http://127.0.0.1:5000/admin/mentors"),
-        axios.get("http://127.0.0.1:5000/admin/projects")
+        api.get("/admin/students"),
+        api.get("/admin/mentors"),
+        api.get("/admin/projects")
       ]);
       
       const sortedStudents = studentsRes.data.sort((a, b) => a.student_id - b.student_id);
@@ -116,7 +117,7 @@ const AdminPanel = () => {
         return;
       }
 
-      await axios.post("http://127.0.0.1:5000/admin/students", newStudent);
+      await api.post("/admin/students", newStudent);
       setShowAddStudent(false);
       setNewStudent({
         name: "",
@@ -140,7 +141,7 @@ const AdminPanel = () => {
         return;
       }
 
-      await axios.post("http://127.0.0.1:5000/admin/mentors", newMentor);
+      await api.post("/admin/mentors", newMentor);
       setShowAddMentor(false);
       setNewMentor({
         name: "",
@@ -161,7 +162,7 @@ const AdminPanel = () => {
     }
     
     try {
-      await axios.delete(`http://127.0.0.1:5000/admin/students/${studentId}`);
+      await api.delete(`/admin/students/${studentId}`);
       fetchData();
     } catch (err) {
       console.error("Error deleting student:", err);
@@ -175,7 +176,7 @@ const AdminPanel = () => {
     }
     
     try {
-      await axios.delete(`http://127.0.0.1:5000/admin/mentors/${mentorId}`);
+      await api.delete(`/admin/mentors/${mentorId}`);
       fetchData();
     } catch (err) {
       console.error("Error deleting mentor:", err);
@@ -189,7 +190,7 @@ const AdminPanel = () => {
     }
     
     try {
-      await axios.delete(`http://127.0.0.1:5000/admin/projects/${projectId}`);
+      await api.delete(`/admin/projects/${projectId}`);
       fetchData();
     } catch (err) {
       console.error("Error deleting project:", err);
@@ -204,7 +205,7 @@ const AdminPanel = () => {
         return;
       }
 
-      await axios.put("http://127.0.0.1:5000/admin/assign-mentor", {
+      await api.put("/admin/assign-mentor", {
         student_id: selectedStudent.student_id,
         mentor_id: selectedStudent.mentor_id
       });
@@ -225,7 +226,7 @@ const AdminPanel = () => {
         return;
       }
 
-      await axios.put(`http://127.0.0.1:5000/admin/projects/${selectedProject.id}/github`, {
+      await api.put(`/admin/projects/${selectedProject.id}/github`, {
         github_link: newGithubLink
       });
       
@@ -282,11 +283,11 @@ const AdminPanel = () => {
       }
 
       if (resetType === "student" && selectedStudent) {
-        await axios.put(`http://127.0.0.1:5000/admin/reset-student-password/${selectedStudent.student_id}`, {
+        await api.put(`/admin/reset-student-password/${selectedStudent.student_id}`, {
           password: newPassword
         });
       } else if (resetType === "mentor" && selectedMentor) {
-        await axios.put(`http://127.0.0.1:5000/admin/reset-mentor-password/${selectedMentor.mentor_id}`, {
+        await api.put(`/admin/reset-mentor-password/${selectedMentor.mentor_id}`, {
           password: newPassword
         });
       }
@@ -660,8 +661,8 @@ const AdminPanel = () => {
 
           <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
             <Button onClick={async () => {
-              await axios.put(
-                `http://127.0.0.1:5000/admin/students/${selectedStudent.student_id}`,
+              await api.put(
+                `/admin/students/${selectedStudent.student_id}`,
                 selectedStudent
               );
               setShowEditStudent(false);
@@ -758,8 +759,8 @@ const AdminPanel = () => {
 
           <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
             <Button onClick={async () => {
-              await axios.put(
-                `http://127.0.0.1:5000/admin/mentors/${selectedMentor.mentor_id}`,
+              await api.put(
+                `/admin/mentors/${selectedMentor.mentor_id}`,
                 selectedMentor
               );
               setShowEditMentor(false);

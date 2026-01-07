@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";   
 import Button from '@mui/joy/Button';
 import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
@@ -179,7 +179,7 @@ const StudentPanel = () => {
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:5000/student/student");
+      const response = await api.get("/student/student");
       setStudents(response.data);
     } catch (err) {
       alert(err.message);
@@ -189,7 +189,7 @@ const StudentPanel = () => {
 
   const fetchMentors = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:5000/faculty");
+      const response = await api.get("/faculty");
       setMentors(response.data);
     } catch (err) {
       console.error("Error fetching mentors:", err);
@@ -227,7 +227,7 @@ const StudentPanel = () => {
   const fetchStudentProjects = async (studentId) => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://127.0.0.1:5000/projects/student/${studentId}`);
+      const response = await api.get(`/projects/student/${studentId}`);
       
       console.log("Project data from API:", response.data);
       
@@ -260,7 +260,7 @@ const StudentPanel = () => {
   const addStudent = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://127.0.0.1:5000/student/add", newStudent);
+      await api.post("/student/add", newStudent);
       alert("Student added successfully.");
       fetchStudents();
       setNewStudent({ name: "", prn: "", email: "", password: "", mentor_id: "", github_link: "" });
@@ -272,7 +272,7 @@ const StudentPanel = () => {
 
   const deleteStudent = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:5000/student/${id}`);
+      await api.delete(`/student/${id}`);
       alert("Student deleted successfully.");
       fetchStudents();
     } catch (err) {
@@ -298,7 +298,7 @@ const StudentPanel = () => {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://127.0.0.1:5000/student/${selectedStudentId}`, updateStudent);
+      await api.put(`/student/${selectedStudentId}`, updateStudent);
       alert("Student updated successfully.");
       fetchStudents();
       
@@ -324,7 +324,7 @@ const StudentPanel = () => {
     }
     
     try {
-      await axios.put(`http://127.0.0.1:5000/student/${currentUser.student_id}/github`, {
+      await api.put(`/student/${currentUser.student_id}/github`, {
         github_link: updateStudent.github_link
       });
       
@@ -382,7 +382,7 @@ const StudentPanel = () => {
     }
 
     try {
-      await axios.put(`http://127.0.0.1:5000/student/${currentUser.student_id}/github`, {
+      await api.put(`/student/${currentUser.student_id}/github`, {
         github_link: githubInput
       });
 
@@ -479,7 +479,7 @@ const StudentPanel = () => {
     if (!window.confirm("Are you sure you want to delete this project?")) return;
 
     try {
-      await axios.delete(`http://127.0.0.1:5000/projects/projects/${projectId}`);
+      await api.delete(`/projects/projects/${projectId}`);
 
       alert("Project deleted");
 
@@ -770,7 +770,7 @@ const StudentPanel = () => {
     setSubmitting(true);
 
     try {
-      await axios.post('http://127.0.0.1:5000/projects', {
+      await api.post('/projects', {
         title: projectTitle,
         description: projectDescription,
         github_link: projectGithubLink,

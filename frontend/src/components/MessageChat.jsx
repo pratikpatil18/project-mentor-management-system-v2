@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Input, Button, Avatar, Badge, CircularProgress } from '@mui/joy';
-import axios from 'axios';
+import api from "../api";   
 import SendIcon from '@mui/icons-material/Send';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
@@ -36,7 +36,7 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
     
     const fetchUnreadCount = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/messages/project/${projectId}`);
+        const response = await api.get(`/messages/project/${projectId}`);
         const unread = response.data.filter(
           msg => !msg.is_read && msg.sender_type !== userType
         ).length;
@@ -60,7 +60,7 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
   const fetchMessages = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://127.0.0.1:5000/messages/project/${projectId}`);
+      const response = await api.get(`/messages/project/${projectId}`);
       setMessages(response.data);
       
       const unread = response.data.filter(
@@ -82,7 +82,7 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
 
   const markMessagesAsRead = async () => {
     try {
-      await axios.put(`http://127.0.0.1:5000/messages/read`, {
+      await api.put(`/messages/read`, {
         project_id: projectId,
         reader_type: userType,
         reader_id: userId
@@ -101,7 +101,7 @@ const MessageChat = ({ projectId, userId, userType, embedded = false }) => {
     }
 
     try {
-      const response = await axios.post(`http://127.0.0.1:5000/messages`, {
+      const response = await api.post(`/messages`, {
         project_id: projectId,
         sender_type: userType,
         sender_id: userId,
