@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from "../api";
 import { Sheet, Typography, Button, Table, Divider, Chip, Modal, ModalDialog, Link, Box, Stack, IconButton, Tooltip, Grid, Textarea } from '@mui/joy';
 import MessageChat from './components/MessageChat';
 import ChatIcon from '@mui/icons-material/Chat';
