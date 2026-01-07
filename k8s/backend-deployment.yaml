@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pmms-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pmms-backend
+  template:
+    metadata:
+      labels:
+        app: pmms-backend
+    spec:
+      containers:
+        - name: backend
+          image: pratikpatil1818/pmms-backend:latest
+          env:
+            - name: DB_HOST
+              value: mysql-service
+            - name: DB_USER
+              value: root
+            - name: DB_PASSWORD
+              value: root
+            - name: DB_NAME
+              value: project_mentor_management
+            - name: DB_PORT
+              value: "3306"
+          ports:
+            - containerPort: 5000

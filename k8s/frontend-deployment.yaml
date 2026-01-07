@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pmms-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pmms-frontend
+  template:
+    metadata:
+      labels:
+        app: pmms-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: pratikpatil1818/pmms-frontend:latest
+          ports:
+            - containerPort: 80
