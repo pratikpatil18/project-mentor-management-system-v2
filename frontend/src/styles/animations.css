@@ -1,4 +1,4 @@
-/* Animation styles */
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -57,7 +57,7 @@
   transform: scale(0.95);
 }
 
-/* Table styling improvements */
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -73,26 +73,22 @@ table th, table td {
   white-space: nowrap;
 }
 
-/* Make sure the status column is wide enough for the chip */
 table th:nth-child(5), 
 table td:nth-child(5) {
   min-width: 100px;
 }
 
-/* Project ID column should be consistent width */
 table th:first-child, 
 table td:first-child {
   width: 120px;
 }
 
-/* Actions column should be wider to fit buttons */
 table th:last-child,
 table td:last-child {
   width: 180px;
   min-width: 180px;
 }
 
-/* Ensure the buttons in table cells don't overflow */
 table button {
   margin: 2px;
   white-space: nowrap;
@@ -100,12 +96,10 @@ table button {
   text-overflow: ellipsis;
 }
 
-/* Add some hover effect to table rows */
 tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Better alignment for modal dialogs */
 .MuiModalDialog-root {
   display: flex;
   flex-direction: column;
@@ -117,7 +111,6 @@ tbody tr:hover {
   overflow-y: auto;
 }
 
-/* Ensure messages are scrollable in chat */
 .message-container {
   max-height: 350px;
   overflow-y: auto;
